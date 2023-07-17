@@ -3,12 +3,16 @@ import 'flatpickr/dist/flatpickr.min.css';
 
 import Notiflix from 'notiflix';
 
-const btnStart = document.querySelector('button[data-start]');
 const input = document.querySelector('input[type="text"]');
+
 const days = document.querySelector('span[data-days]');
 const hours = document.querySelector('span[data-hours]');
 const minutes = document.querySelector('span[data-minutes]');
 const seconds = document.querySelector('span[data-seconds]');
+
+const btnStart = document.querySelector('button[data-start]');
+btnStart.addEventListener('click', onBtnStartClick);
+btnStart.disabled = true;
 
 const options = {
   enableTime: true,
@@ -23,24 +27,16 @@ const options = {
       return;
     }
     btnStart.disabled = false;
-
-    const targetDate = selectedDates[0];
     Notiflix.Notify.success('A date selected successfully');
   },
 };
 
-btnStart.disabled = true;
-btnStart.addEventListener('click', onBtnStartClick);
+const fp = flatpickr(input, options);
 
-const fp = flatpickr('input#datetime-picker', options);
-
-function onBtnStartClick() {
-  btnStart.disabled = true;
-  input.disabled = true;
-
+function makeTimer() {
   const targetDate = fp.selectedDates[0];
 
-  setInterval(() => {
+  const intervalID = setInterval(() => {
     const currentDate = Date.now();
     const timerDate = targetDate - currentDate;
 
@@ -48,7 +44,20 @@ function onBtnStartClick() {
     hours.textContent = addLeadingZero(convertMs(timerDate).hours);
     minutes.textContent = addLeadingZero(convertMs(timerDate).minutes);
     seconds.textContent = addLeadingZero(convertMs(timerDate).seconds);
+
+    if (timerDate < 1000) {
+      clearInterval(intervalID);
+
+      input.disabled = false;
+      Notiflix.Notify.success("Time's up");
+    }
   }, 1000);
+}
+
+function onBtnStartClick() {
+  btnStart.disabled = true;
+  input.disabled = true;
+  makeTimer();
 }
 
 function convertMs(ms) {
