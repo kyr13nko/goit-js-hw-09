@@ -1,12 +1,14 @@
 import flatpickr from 'flatpickr';
 import 'flatpickr/dist/flatpickr.min.css';
 
+import Notiflix from 'notiflix';
+
 const btnStart = document.querySelector('button[data-start]');
 const input = document.querySelector('input[type="text"]');
-// const days = document.querySelector('span[data-days]');
-// const hours = document.querySelector('span[data-hours]');
-// const minutes = document.querySelector('span[data-minutes]');
-// const seconds = document.querySelector('span[data-seconds]');
+const days = document.querySelector('span[data-days]');
+const hours = document.querySelector('span[data-hours]');
+const minutes = document.querySelector('span[data-minutes]');
+const seconds = document.querySelector('span[data-seconds]');
 
 const options = {
   enableTime: true,
@@ -16,31 +18,36 @@ const options = {
   onClose(selectedDates) {
     if (selectedDates[0] < Date.now()) {
       btnStart.disabled = true;
-      window.alert('Please choose a date in the future');
+      // window.alert('Please choose a date in the future');
+      Notiflix.Notify.failure('Please choose a date in the future');
       return;
     }
     btnStart.disabled = false;
+
+    const targetDate = selectedDates[0];
+    Notiflix.Notify.success('A date selected successfully');
   },
 };
 
 btnStart.disabled = true;
 btnStart.addEventListener('click', onBtnStartClick);
 
-flatpickr('input#datetime-picker', options);
+const fp = flatpickr('input#datetime-picker', options);
 
 function onBtnStartClick() {
   btnStart.disabled = true;
   input.disabled = true;
 
-  const targetDate = new Date('10/26/2023');
+  const targetDate = fp.selectedDates[0];
 
   setInterval(() => {
     const currentDate = Date.now();
-    const testDate = targetDate - currentDate;
-    console.log(convertMs(testDate).days);
-    console.log(convertMs(testDate).hours);
-    console.log(convertMs(testDate).minutes);
-    console.log(convertMs(testDate).seconds);
+    const timerDate = targetDate - currentDate;
+
+    days.textContent = addLeadingZero(convertMs(timerDate).days);
+    hours.textContent = addLeadingZero(convertMs(timerDate).hours);
+    minutes.textContent = addLeadingZero(convertMs(timerDate).minutes);
+    seconds.textContent = addLeadingZero(convertMs(timerDate).seconds);
   }, 1000);
 }
 
@@ -58,7 +65,6 @@ function convertMs(ms) {
   return { days, hours, minutes, seconds };
 }
 
-// days.textContent = ``;
-// hours.textContent = ``;
-// minutes.textContent = ``;
-// seconds.textContent = ``;
+function addLeadingZero(value) {
+  return value.toString().padStart(2, '0');
+}
