@@ -3,6 +3,33 @@ import Notiflix from 'notiflix';
 const form = document.querySelector('.form');
 
 form.addEventListener('submit', onFormSubmit);
+form.addEventListener('input', onFormInput);
+
+function onFormInput(event) {
+  const { delay, step, amount } = event.currentTarget.elements;
+
+  if (delay.value < 0 && delay.value) {
+    // alert('❌ The field value must be a positive number or 0');
+    Notiflix.Notify.failure(
+      '❌ The field value must be a positive number or 0'
+    );
+    delay.value = 0;
+  }
+
+  if (step.value < 0 && step.value) {
+    // alert('❌ The field value must be a positive number or 0');
+    Notiflix.Notify.failure(
+      '❌ The field value must be a positive number or 0'
+    );
+    step.value = 0;
+  }
+
+  if (amount.value <= 0 && amount.value) {
+    // alert('❌ The field value must be a positive number');
+    Notiflix.Notify.failure('❌ The field value must be a positive number');
+    amount.value = 1;
+  }
+}
 
 function onFormSubmit(event) {
   event.preventDefault();
@@ -45,23 +72,3 @@ function createPromise(position, delay) {
     }, delay);
   });
 }
-
-/* 
-
-Для заборони ввода відємних значень для delay та amount
-
-form.addEventListener('input', onFormInput);
-
-function onFormInput(event) {
-  const { delay, amount } = event.currentTarget.elements;
-
-  if (delay.value < 0 && delay.value) {
-    alert('❌ The field value must be a positive number or 0');
-    delay.value = 0;
-  }
-
-  if (amount.value <= 0 && amount.value) {
-    alert('❌ The field value must be a positive number');
-    amount.value = 1;
-  }
-} */

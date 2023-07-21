@@ -14,6 +14,8 @@ const btnStart = document.querySelector('button[data-start]');
 btnStart.addEventListener('click', onBtnStartClick);
 btnStart.disabled = true;
 
+let targetDate = null;
+
 const options = {
   enableTime: true,
   time_24hr: true,
@@ -27,6 +29,7 @@ const options = {
       return;
     }
     btnStart.disabled = false;
+    targetDate = fp.selectedDates[0];
     Notiflix.Notify.success('A date selected successfully');
   },
 };
@@ -34,8 +37,6 @@ const options = {
 const fp = flatpickr(input, options);
 
 function makeTimer() {
-  const targetDate = fp.selectedDates[0];
-
   const intervalID = setInterval(() => {
     const currentDate = Date.now();
     const timerDate = targetDate - currentDate;
